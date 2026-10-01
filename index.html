@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For You 🫀</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050505;
+  --cream:#f6f2ec;
+  --ink:#171313;
+  --pink:#ff5577;
+  --pink2:#ff8ea3;
+  --muted:#aaa39f;
+  --glass:rgba(255,255,255,.055);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:Inter,Arial,sans-serif;color:#fff}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{position:relative;width:100vw;height:100dvh;overflow:hidden;background:radial-gradient(circle at 15% 20%,rgba(255,85,119,.065),transparent 28%),radial-gradient(circle at 85% 80%,rgba(255,85,119,.045),transparent 32%),#050505}
+.slides{position:absolute;inset:0}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:54px 22px 56px;opacity:0;visibility:hidden;transform:translateX(25px);transition:opacity .45s ease,transform .45s ease,visibility .45s;overflow:hidden}
+.slide.active{opacity:1;visibility:visible;transform:translateX(0);z-index:5}
+.content{width:min(1120px,100%);height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:0}
+.story-block{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:0}
+.eyebrow{font-size:.69rem;letter-spacing:.27em;text-transform:uppercase;color:var(--pink2);margin-bottom:12px;flex:0 0 auto}
+.title{font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;line-height:.95;letter-spacing:-.025em;font-size:clamp(2.8rem,6.3vw,6rem);flex:0 0 auto}
+.subtitle{max-width:730px;margin-top:18px;color:rgba(255,255,255,.86);font-size:clamp(.98rem,1.8vw,1.24rem);line-height:1.62;font-weight:300}
+.progress{position:fixed;top:15px;left:50%;transform:translateX(-50%);display:flex;gap:6px;width:min(420px,72vw);z-index:50;pointer-events:none}
+.progress i{height:2px;flex:1;background:rgba(255,255,255,.15);transition:.3s}
+.progress i.on{background:var(--pink);box-shadow:0 0 10px rgba(255,85,119,.35)}
+.nav{width:100%;display:flex;justify-content:center;align-items:center;gap:14px;margin-top:26px;flex:0 0 auto;z-index:20}
+.nav-stack{flex-direction:column;gap:15px}
+.btn{border:1px solid rgba(255,255,255,.18);background:var(--glass);color:#fff;border-radius:999px;padding:11px 21px;backdrop-filter:blur(12px);transition:.25s ease}
+.btn:hover{border-color:rgba(255,85,119,.62);background:rgba(255,85,119,.09);transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,85,119,.12)}
+.btn.primary{border-color:rgba(255,85,119,.35);background:rgba(255,85,119,.10)}
+/* Password */
+.password-content{justify-content:center}
+.lock{width:68px;height:68px;border:1px solid rgba(255,255,255,.14);border-radius:50%;display:grid;place-items:center;font-size:1.75rem;margin-bottom:18px;box-shadow:0 0 50px rgba(255,85,119,.08);animation:pulse 2.3s infinite}
+.pass-input{width:min(290px,80vw);margin-top:25px;padding:14px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.045);color:#fff;outline:none;text-align:center;letter-spacing:.16em}
+.pass-input:focus{border-color:rgba(255,85,119,.65);box-shadow:0 0 0 4px rgba(255,85,119,.05)}
+.error{height:19px;margin-top:9px;font-size:.82rem;color:#ff9bad;opacity:0;transition:.2s}.error.show{opacity:1}
+/* Cover */
+.cover-slide .content{justify-content:center}
+.cover-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.27;filter:contrast(1.08);z-index:-2}
+.cover-shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.70),rgba(0,0,0,.52),rgba(0,0,0,.90)),radial-gradient(circle at center,rgba(255,85,119,.09),transparent 52%);z-index:-1}
+/* Letter */
+.letter-layout{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;align-items:center;justify-items:center}
+.letter{width:min(900px,92vw);height:100%;min-height:0;margin-top:20px;background:var(--cream);color:var(--ink);border-radius:12px;box-shadow:0 25px 70px rgba(0,0,0,.45);padding:27px 33px;display:block;overflow:hidden;text-align:left}
+.letter-text{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(1rem,1.48vw,1.22rem);font-weight:500;line-height:1.25;white-space:pre-wrap;letter-spacing:normal;margin:0;width:100%;overflow:hidden;word-break:normal;overflow-wrap:break-word}
+.cursor{display:inline-block;width:2px;height:1em;background:var(--ink);vertical-align:-.1em;animation:blink .7s steps(1) infinite}
+/* First picture */
+.picture-layout{display:grid;grid-template-rows:auto auto auto auto;align-items:center;justify-items:center;align-content:center}
+.single-frame{width:min(680px,88vw);height:min(38vh,385px);margin-top:18px;border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.13);background:#0c0c0c;box-shadow:0 25px 70px rgba(0,0,0,.42);flex:0 0 auto}
+.single-frame img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    object-position:center;
+    background:#0c0c0c;
+    image-orientation:from-image;
+}
+.caption{margin-top:15px;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;color:#ddd6d2;font-size:clamp(1.15rem,2vw,1.5rem);line-height:1.2;flex:0 0 auto}
+/* Gallery */
+.gallery-layout{display:grid;grid-template-rows:auto auto minmax(0,1fr) auto auto;align-items:center;justify-items:center}
+.gallery{width:min(1040px,94vw);height:min(35vh,380px);margin-top:10px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);gap:9px;align-items:center;justify-items:center;min-height:0;flex:0 0 auto}
+.polaroid{
+    width:100%;
+    height:100%;
+    max-width:210px;
+    min-height:0;
+    padding:7px 7px 24px;
+    background:#f6f1eb;
+    box-shadow:0 10px 25px rgba(0,0,0,.38);
+    position:relative;
+    overflow:hidden;
+}
+.polaroid img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    object-position:center;
+    display:block;
+    background:#e7e2db;
+    image-orientation:from-image;
+}
+.polaroid .num{position:absolute;bottom:3px;left:0;right:0;text-align:center;color:#222;font:500 .68rem/1 "Cormorant Garamond",Georgia,serif}
+.polaroid:nth-child(1){transform:rotate(-3deg)}.polaroid:nth-child(2){transform:rotate(2deg)}.polaroid:nth-child(3){transform:rotate(-1deg)}.polaroid:nth-child(4){transform:rotate(3deg)}.polaroid:nth-child(5){transform:rotate(-2deg)}.polaroid:nth-child(6){transform:rotate(2deg)}.polaroid:nth-child(7){transform:rotate(-2deg)}.polaroid:nth-child(8){transform:rotate(3deg)}.polaroid:nth-child(9){transform:rotate(-3deg)}.polaroid:nth-child(10){transform:rotate(2deg)}.polaroid:nth-child(11){transform:rotate(-2deg)}.polaroid:nth-child(12){transform:rotate(3deg)}
+.gallery-caption{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;color:#ddd6d2;font-size:clamp(1.05rem,1.8vw,1.35rem);line-height:1.15;margin-top:12px;padding:0 12px;flex:0 0 auto}
+/* Meaning */
+.meaning-layout{justify-content:center}
+.meaning-list{list-style:none;margin-top:28px;display:flex;flex-direction:column;gap:5px;font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(1.55rem,3.8vw,2.8rem);line-height:1.12;text-align:center}
+.meaning-list li{opacity:1;transform:none}
+.gratitude{max-width:700px;margin-top:20px;color:#aaa39f;font-size:clamp(.92rem,1.65vw,1.14rem);line-height:1.45;font-style:italic}
+/* Final */
+.final-layout{justify-content:center}
+.final-copy{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(2.3rem,5.3vw,4.7rem);line-height:1.03;margin-top:24px}.final-copy span{color:var(--pink2)}
+.signature{margin-top:25px;font-family:"Cormorant Garamond",Georgia,serif;font-size:1.42rem;color:#e2dcd8;line-height:1.4}.signature small{color:#aaa39f}
+.final-layout .nav-stack{margin-top:30px}
+/* Bonus: ALWAYS visible */
+.bonus-layout{justify-content:center}
+.bonus-copy{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(2rem,5vw,4.25rem);line-height:1.1;margin-top:20px}
+.bonus-copy span{display:block;opacity:1;transform:none}
+.restart{margin-top:28px;border:0;background:none;color:#bdb7b3;text-decoration:underline;text-underline-offset:4px}
+/* Effects */
+.hearts{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:30}.heart{position:absolute;bottom:-30px;color:var(--pink);animation:floatUp linear forwards;filter:drop-shadow(0 0 8px rgba(255,85,119,.25))}
+.overlay{position:fixed;inset:0;display:grid;place-items:center;background:#050505;opacity:0;visibility:hidden;z-index:100;transition:.45s}.overlay.show{opacity:1;visibility:visible}.welcome{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(2.5rem,6vw,5rem)}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 40px rgba(255,85,119,.05)}50%{transform:scale(1.04);box-shadow:0 0 60px rgba(255,85,119,.13)}}
+@keyframes blink{50%{opacity:0}}@keyframes floatUp{0%{transform:translateY(0) rotate(0);opacity:0}12%{opacity:.72}100%{transform:translateY(-112vh) rotate(18deg);opacity:0}}
+@media(max-width:900px){
+  .gallery{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);height:min(35vh,380px)}
+  .polaroid{max-width:165px}
+}
+@media(max-width:620px){
+  .slide{padding:43px 14px 52px}
+  .progress{top:11px;width:76vw}
+  .title{font-size:clamp(2.35rem,10.5vw,4rem)}
+  .eyebrow{font-size:.61rem;margin-bottom:9px}
+  .subtitle{font-size:.94rem;line-height:1.5;margin-top:14px}
+  .letter{width:92vw;margin-top:14px;padding:20px 19px}
+  .letter-text{font-size:.90rem;line-height:1.20}
+  .letter-layout .nav{margin-top:21px}
+  .single-frame{width:92vw;height:min(36vh,330px);margin-top:14px}
+  .caption{font-size:1.15rem;margin-top:10px}
+  .picture-layout .nav{margin-top:21px}
+  .gallery{
+    width:94vw;
+    height:min(34vh,300px);
+    gap:6px;
+    margin-top:7px;
+}
+  .polaroid{
+    max-width:112px;
+    padding:4px 4px 17px;
+}
+  .polaroid .num{font-size:.55rem;bottom:2px}
+  .gallery-caption{font-size:.95rem;margin-top:9px}
+  .gallery-layout .nav{margin-top:21px}
+  .meaning-list{margin-top:19px;font-size:1.48rem;gap:5px}
+  .gratitude{font-size:.87rem;margin-top:15px}
+  .meaning-layout .nav{margin-top:24px}
+  .final-copy{font-size:2.55rem}
+  .final-layout .nav-stack{margin-top:25px;gap:13px}
+}
+@media(max-height:690px){
+  .slide{padding-top:34px;padding-bottom:48px}
+  .letter{padding:16px 22px}
+  .letter-text{font-size:.86rem;line-height:1.16}
+  .letter-layout .nav{margin-top:17px}
+  .single-frame{height:min(32vh,300px)}
+  .caption{font-size:1.06rem;margin-top:8px}
+  .picture-layout .nav{margin-top:17px}
+  .gallery{height:min(31vh,320px)}
+  .gallery-caption{font-size:.90rem;margin-top:7px}
+  .gallery-layout .nav{margin-top:17px}
+  .meaning-list{margin-top:14px;font-size:1.38rem;gap:4px}
+  .gratitude{margin-top:10px;font-size:.82rem}
+  .meaning-layout .nav{margin-top:17px}
+  .signature{margin-top:18px}
+  .final-layout .nav-stack{margin-top:20px;gap:11px}
+}
+@media(max-height:600px){
+  .title{font-size:clamp(2rem,8vw,3.3rem)}
+  .letter{padding:12px 16px}
+  .letter-text{font-size:.78rem;line-height:1.12}
+  .letter-layout .nav{margin-top:12px}
+  .single-frame{height:min(27vh,235px)}
+  .caption{font-size:.98rem;margin-top:6px}
+  .picture-layout .nav{margin-top:12px}
+  .gallery{height:min(28vh,240px);gap:4px}
+  .gallery-caption{font-size:.82rem;margin-top:5px}
+  .gallery-layout .nav{margin-top:12px}
+  .meaning-list{font-size:1.28rem;gap:3px;margin-top:10px}
+  .gratitude{font-size:.76rem;margin-top:7px}
+  .meaning-layout .nav{margin-top:12px}
+  .final-copy{font-size:2rem;margin-top:16px}
+  .signature{font-size:1.12rem;margin-top:14px}
+  .final-layout .nav-stack{margin-top:15px;gap:8px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="progress" id="progress"></div>
+  <main class="slides">
+
+    <!-- 0 PASSWORD -->
+    <section class="slide active" data-index="0">
+      <div class="content password-content">
+        <div class="lock">🫀</div>
+        <div class="eyebrow">A little something for you</div>
+        <h1 class="title">Before we begin...</h1>
+        <p class="subtitle">Enter the time<br>we started dating 🫀</p>
+        <input id="passwordInput" class="pass-input" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" autocomplete="off" aria-label="Enter the time we started dating">
+        <button id="unlockBtn" class="btn primary" style="margin-top:13px">Unlock ❤️</button>
+        <div id="error" class="error"></div>
+      </div>
+    </section>
+
+    <!-- 1 COVER -->
+    <section class="slide cover-slide" data-index="1">
+      <img data-photo-base="cover" class="cover-photo" alt="Our photo">
+      <div class="cover-shade"></div>
+      <div class="content">
+        <div class="story-block">
+          <div class="eyebrow">For you, always</div>
+          <h2 class="title">Happy Boyfriend's Day 🫶</h2>
+          <p class="subtitle">You are the most unexpected,<br>yet the best kind of person I have ever met.</p>
+          <div class="nav"><button class="btn primary" data-next>Open My Heart →</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 LETTER -->
+    <section class="slide letter-slide" data-index="2">
+      <div class="content">
+        <div class="story-block letter-layout">
+          <div class="eyebrow">A letter from me to you</div>
+          <h2 class="title" style="font-size:clamp(2.45rem,5.4vw,5.05rem)">Words From My Heart</h2>
+          <div class="letter">
+            <div id="letterText" class="letter-text"></div><span id="cursor" class="cursor"></span>
+          </div>
+          <div class="nav"><button class="btn" data-next>Next ❤️</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 FIRST PICTURE -->
+    <section class="slide" data-index="3">
+      <div class="content">
+        <div class="story-block picture-layout">
+          <div class="eyebrow">One of my favorite firsts</div>
+          <h2 class="title" style="font-size:clamp(2.4rem,5.25vw,4.9rem)">First Picture Together 📸</h2>
+          <div class="single-frame"><img data-photo-base="first-picture" alt="Our first picture together"></div>
+          <div class="caption">Thank you for waiting😭</div>
+          <div class="nav"><button class="btn" data-next>Next ❤️</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 OUR DAYS -->
+    <section class="slide" data-index="4">
+      <div class="content">
+        <div class="story-block gallery-layout">
+          <div class="eyebrow">Little moments, big memories</div>
+          <h2 class="title" style="font-size:clamp(2.4rem,5.25vw,4.9rem)">Our Days ❤️</h2>
+          <div class="gallery">
+            <figure class="polaroid"><img data-photo-base="photo01" alt="Memory 1"><figcaption class="num">01</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo02" alt="Memory 2"><figcaption class="num">02</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo03" alt="Memory 3"><figcaption class="num">03</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo04" alt="Memory 4"><figcaption class="num">04</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo05" alt="Memory 5"><figcaption class="num">05</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo06" alt="Memory 6"><figcaption class="num">06</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo07" alt="Memory 7"><figcaption class="num">07</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo08" alt="Memory 8"><figcaption class="num">08</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo09" alt="Memory 9"><figcaption class="num">09</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo10" alt="Memory 10"><figcaption class="num">10</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo11" alt="Memory 11"><figcaption class="num">11</figcaption></figure>
+            <figure class="polaroid"><img data-photo-base="photo12" alt="Memory 12"><figcaption class="num">12</figcaption></figure>
+          </div>
+          <div class="gallery-caption">Every picture here<br>holds a piece of my heart. ❤️</div>
+          <div class="nav"><button class="btn" data-next>Next ❤️</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 WHAT YOU MEAN -->
+    <section class="slide" data-index="5">
+      <div class="content">
+        <div class="story-block meaning-layout">
+          <div class="eyebrow">In more ways than I can explain</div>
+          <h2 class="title" style="font-size:clamp(2.4rem,5.25vw,4.9rem)">What You Mean To Me</h2>
+          <ul class="meaning-list">
+            <li>1. You are my comfort</li>
+            <li>2. My safe place</li>
+            <li>3. My home</li>
+            <li>4. My favorite person</li>
+            <li>5. My unpaid therapist</li>
+          </ul>
+          <p class="gratitude">And im really thankful for each and every thing that u do</p>
+          <div class="nav"><button class="btn" data-next>Next ❤️</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 FINAL -->
+    <section class="slide" data-index="6">
+      <div class="content">
+        <div class="story-block final-layout">
+          <div class="eyebrow">One last thing before you go</div>
+          <h2 class="title" style="font-size:clamp(2.6rem,5.7vw,5.7rem);max-width:900px">If I had to choose again...</h2>
+          <div class="final-copy">I'd choose you.<br><span>Every single time.</span></div>
+          <div class="signature">Happy Boyfriend's Day 🫶<br><small>— Aditi</small></div>
+          <div class="nav nav-stack">
+            <button id="secretBtn" class="btn">Don't Click 👀</button>
+            <button class="btn" data-next>Next ❤️</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 BONUS -->
+    <section class="slide" data-index="7">
+      <div class="content">
+        <div class="story-block bonus-layout">
+          <div class="lock">👀</div>
+          <div class="eyebrow">You clicked it anyway...</div>
+          <div class="bonus-copy">
+            <span>Also...</span>
+            <span>You're extremely cute.</span>
+            <span>And yes,</span>
+            <span style="color:var(--pink2)">I'm obsessed with you ❤️</span>
+          </div>
+          <button id="restartBtn" class="restart">Start Again ↺</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="hearts" id="hearts"></div>
+  <div class="overlay" id="overlay"><div class="welcome">Welcome, My Love ❤️</div></div>
+</div>
+
+<script>
+const slides = [...document.querySelectorAll(".slide")];
+const progress = document.getElementById("progress");
+const passwordInput = document.getElementById("passwordInput");
+const unlockBtn = document.getElementById("unlockBtn");
+const error = document.getElementById("error");
+const overlay = document.getElementById("overlay");
+const letterText = document.getElementById("letterText");
+const cursor = document.getElementById("cursor");
+const secretBtn = document.getElementById("secretBtn");
+const restartBtn = document.getElementById("restartBtn");
+const hearts = document.getElementById("hearts");
+
+const LETTER = `To the love of my life,
+
+I don't always say it enough, but having you in my life is and will always be the best part of my life.
+
+Mai bohot lucky hu ki I have you in my life, and I hope ki tu hamesha rahe because I really don't want this to end.
+
+I'll always love you and keep loving you more every day.
+
+You mean a lot to me.
+
+I Love You, Dnyanesh 🫀`;
+
+let current = 0;
+let typingTimer = null;
+let letterStarted = false;
+
+function buildProgress(){
+  progress.innerHTML = "";
+  for(let i = 0; i < 6; i++){
+    const bar = document.createElement("i");
+    if(i === 0) bar.classList.add("on");
+    progress.appendChild(bar);
+  }
+}
+
+function updateProgress(){
+  const bars = [...progress.children];
+  const storyIndex = Math.min(Math.max(current - 1, 0), 5);
+  bars.forEach((bar,i) => bar.classList.toggle("on", i === storyIndex));
+}
+
+function showSlide(index){
+  index = Math.max(0, Math.min(index, 7));
+  slides.forEach((slide,i) => slide.classList.toggle("active", i === index));
+  current = index;
+  updateProgress();
+  if(index === 2 && !letterStarted) startLetter();
+}
+
+function fitLetter(){
+  if(!letterText) return;
+  const letter = letterText.closest(".letter");
+  if(!letter) return;
+
+  let size = parseFloat(getComputedStyle(letterText).fontSize);
+  const minSize = window.innerWidth <= 620 ? 11 : 13;
+
+  letterText.style.fontSize = "";
+  size = parseFloat(getComputedStyle(letterText).fontSize);
+
+  while(letterText.scrollHeight > letter.clientHeight && size > minSize){
+    size -= .35;
+    letterText.style.fontSize = size + "px";
+  }
+}
+
+function startLetter(){
+  letterStarted = true;
+  clearInterval(typingTimer);
+  letterText.textContent = "";
+  cursor.style.display = "inline-block";
+
+  let i = 0;
+  typingTimer = setInterval(() => {
+    if(i < LETTER.length){
+      letterText.textContent += LETTER[i++];
+      if(i % 18 === 0) fitLetter();
+    }else{
+      clearInterval(typingTimer);
+      cursor.style.display = "none";
+      fitLetter();
+    }
+  }, 3);
+}
+
+function unlock(){
+  const entered = passwordInput.value.trim().replace(/\s/g, "");
+  if(entered === "12:12"){
+    error.classList.remove("show");
+    overlay.classList.add("show");
+    spawnHearts(18);
+    setTimeout(() => {
+      overlay.classList.remove("show");
+      showSlide(1);
+      passwordInput.value = "";
+    }, 1050);
+  }else{
+    error.textContent = "That's not our time ❤️";
+    error.classList.add("show");
+    passwordInput.value = "";
+    passwordInput.focus();
+  }
+}
+
+unlockBtn.addEventListener("click", unlock);
+passwordInput.addEventListener("keydown", e => { if(e.key === "Enter") unlock(); });
+
+document.querySelectorAll("[data-next]").forEach(button => {
+  button.addEventListener("click", () => {
+    if(current < 7){
+      showSlide(current + 1);
+      spawnHearts(7);
+    }
+  });
+});
+
+secretBtn.addEventListener("click", () => {
+  showSlide(7);
+  spawnHearts(18);
+});
+
+restartBtn.addEventListener("click", () => {
+  clearInterval(typingTimer);
+  letterStarted = false;
+  letterText.textContent = "";
+  cursor.style.display = "inline-block";
+  showSlide(1);
+  spawnHearts(10);
+});
+
+function spawnHearts(count = 5){
+  for(let i = 0; i < count; i++){
+    const heart = document.createElement("span");
+    heart.className = "heart";
+    heart.textContent = Math.random() > .25 ? "♥" : "♡";
+    heart.style.left = (Math.random() * 100) + "%";
+    heart.style.fontSize = (10 + Math.random() * 18) + "px";
+    heart.style.animationDuration = (4 + Math.random() * 4) + "s";
+    heart.style.animationDelay = (Math.random() * .5) + "s";
+    hearts.appendChild(heart);
+    setTimeout(() => heart.remove(), 9000);
+  }
+}
+
+setInterval(() => { if(current > 0) spawnHearts(1); }, 2600);
+
+window.addEventListener("keydown", e => {
+  if(current >= 1){
+    if(e.key === "ArrowRight" && current < 7) showSlide(current + 1);
+    if(e.key === "ArrowLeft" && current > 1) showSlide(current - 1);
+  }
+});
+
+window.addEventListener("resize", fitLetter);
+window.addEventListener("wheel", e => e.preventDefault(), {passive:false});
+window.addEventListener("touchmove", e => {
+  if(!e.target.closest("input,button")) e.preventDefault();
+}, {passive:false});
+
+function loadPhoto(img){
+  const base = img.dataset.photoBase;
+  if(!base) return;
+  const extensions = [".jpg",".jpeg",".png",".webp"];
+  let index = 0;
+  function tryNext(){
+    if(index >= extensions.length){
+      img.removeAttribute("src");
+      img.alt = "Add " + base + " photo";
+      return;
+    }
+    const candidate = base + extensions[index++];
+    img.onload = () => {};
+    img.onerror = tryNext;
+    img.src = candidate;
+  }
+  tryNext();
+}
+
+document.querySelectorAll("img[data-photo-base]").forEach(loadPhoto);
+buildProgress();
+</script>
+</body>
+</html>
